@@ -11,6 +11,5 @@
   "action": {
     "default_title": "EVA - Package Tracking",
     "default_popup": "popup.html"
-
   }
 }

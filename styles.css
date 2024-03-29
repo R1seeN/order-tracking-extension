@@ -1,6 +1,23 @@
 body {
-  font: 100% Helvetica, sans-serif;
+  font: 100% Arial, sans-serif;
   font-size: 14px;
-  width: 200px;
+  width: 250px;
+  height: 250px;
+}
+
+.header {
+  text-align: center;
+
+}
+
+.eva_icon {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+.tracking_description {
+  text-align: center;
 }
 

@@ -6,10 +6,19 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<header class="header">
+    <img class="eva_icon" src="images/eva.png" alt="EVA" >
+    <h4>Відстеження замовлення</h4>
+</header>
+
+<div class="tracking_description">
+    <p>Вкажіть номер замовлення, щоб дізнатися його місцезнаходження</p>
+</div>
+
 <label for="order-number"></label><input type="text" placeholder="Введіть номер замовлення" maxlength="15" id="order-number">
     <input type="submit" value="Відстежити замовлення" id="order-button">
 
-    <div id="order-result"></div>
+    <div id="order-container"></div>
     <script type="module" src="popup.js"></script>
 </body>
 </html>
