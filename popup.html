@@ -8,17 +8,24 @@
 <body>
 <header class="header">
     <img class="eva_icon" src="images/eva.png" alt="EVA" >
-    <h4>Відстеження замовлення</h4>
+    <h3 class="header__description">Відстеження замовлення</h3>
 </header>
 
-<div class="tracking_description">
-    <p>Вкажіть номер замовлення, щоб дізнатися його місцезнаходження</p>
-</div>
+<main>
+    <section class="description">
+        <p class="description__">Вкажіть номер замовлення, щоб дізнатися його місцезнаходження</p>
+    </section>
+    <section class="input">
+        <label for="order-number"></label>
+        <input type="text" placeholder="Введіть номер замовлення" maxlength="15" class="input__tracking" id="order-number">
+        <input type="submit" value="Відстежити замовлення" class="input__button" id="order-button">
+    </section>
 
-<label for="order-number"></label><input type="text" placeholder="Введіть номер замовлення" maxlength="15" id="order-number">
-    <input type="submit" value="Відстежити замовлення" id="order-button">
+    <section class="result">
+        <div id="order-container"></div>
+    </section>
 
-    <div id="order-container"></div>
     <script type="module" src="popup.js"></script>
+</main>
 </body>
 </html>

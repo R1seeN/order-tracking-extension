@@ -1,13 +1,25 @@
+
+
+html {
+  margin: 0;
+  font: 100% "Roboto", sans-serif;
+}
+
 body {
-  font: 100% Arial, sans-serif;
   font-size: 14px;
-  width: 250px;
+  width: 300px;
   height: 250px;
+
 }
 
 .header {
   text-align: center;
 
+
+}
+
+.header__description {
+  font-weight: bold;
 }
 
 .eva_icon {
@@ -17,7 +29,135 @@ body {
   width: 50%;
 }
 
-.tracking_description {
+.description {
   text-align: center;
 }
+
+.result__notfound {
+  display: block;
+  padding: 10px;
+  margin-bottom: 10px;;
+  text-align: center;
+  color: red;
+  background-color: #fac7c7;
+
+}
+
+.input {
+  text-align: center;
+}
+
+.input__tracking {
+  align-items: center;
+  width: 90%;
+  padding: 5px;
+  margin: 2px;
+  box-sizing: border-box;
+  border: 1px solid #398d35;
+  border-radius: 4px;
+}
+
+
+.input__button {
+  display: inline-block;
+  background-color: #e56c52;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin: 10px;
+  font-weight: bold;
+
+}
+
+.result__number {
+  font-weight: bold;
+  margin: 16px;
+}
+
+.result__success {
+  margin: 0 13px;
+  box-sizing: border-box;
+  display: flex;
+  background-color: #dbf8da;
+  width: 37%;
+  border-radius: 60px;
+
+
+}
+
+.result__success__description {
+  margin: 0;
+  background: url(images/result-success-icon.png) no-repeat left center;
+  padding: 5px 30px;
+  color: #49c943;
+  background-position-x: 8px;
+  background-position-y: 7px;
+
+}
+
+
+.input__button:hover {
+  background: rgba(0,0,0,0);
+  color: #e0482b;
+  box-shadow: inset 0 0 0 1px #e0482b;
+}
+
+.result__list {
+  margin: 11px 3px;
+  box-sizing: border-box;
+  display: block;
+  padding: 10px 10px 0 10px;
+  list-style: none;
+  overflow: hidden;
+
+
+}
+
+
+.list__date {
+  margin-left: 32px;
+  color: #d2cfcf;
+  margin-bottom: 24px;
+}
+
+.result__cancelled {
+  margin: 0 13px;
+  box-sizing: border-box;
+  display: flex;
+  background-color: #fdedea;
+  width: 37%;
+  border-radius: 60px;
+
+}
+
+.result__cancelled__description {
+  margin: 0;
+  background: url(images/cross.png) no-repeat left center;
+  padding: 5px 30px;
+  color: #f3614c;
+  background-position-x: 8px;
+  background-position-y: 7px;
+
+}
+
+
+.result__list__disabled {
+  background:url("images/circle-outline-of-small-size.png") no-repeat 0 0;
+  padding-left:30px;
+  padding-bottom: 10px;
+  background-position-y: 3px;
+
+}
+
+.result__list__active {
+  background:url("images/circle-outline-of-small-size (1).png") no-repeat 0 0;
+  padding-left:30px;
+  padding-bottom: 10px;
+  background-position-y: 3px;
+}
+
+
+
+
 
