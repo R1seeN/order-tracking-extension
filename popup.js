@@ -63,14 +63,20 @@ const fetchOrderTrackingData = (url) => {
     fetch(url)
         .then((response) => response.json())
         .then((data) => {
-            console.log(data)
+            //setToLocalStorage(data);
             orderContainer.innerHTML = `<div id="order-result">${(isOrderFound(data))? insertData(data): "<p class='result__notfound'>Замовлення не знайдено</p>"}</div>`
 
         })
         .catch(console.error);
 }
 
-const setToLocalStorage = () => {
-    localStorage.setItem(orderNumberValue, 'first');
+const setToLocalStorage = (data) => {
+    const requestDataJson = JSON.parse(data);
+    const requestData = requestDataJson !== null? requestDataJson : {};
+
+    requestData[orderNumberValue] = data;
+
+
+    localStorage.setItem('request-data', JSON.stringify(requestData));
 }
 
