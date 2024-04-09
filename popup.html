@@ -17,8 +17,11 @@
     </section>
     <section class="input">
         <label for="order-number"></label>
-        <input type="text" placeholder="Введіть номер замовлення" maxlength="15" class="input__tracking" id="order-number">
+        <input type="text" list="order" placeholder="Введіть номер замовлення" maxlength="15" class="input__tracking" id="order-number">
         <input type="submit" value="Відстежити замовлення" class="input__button" id="order-button">
+        <datalist id="order">
+
+        </datalist>
     </section>
 
     <section class="result">
