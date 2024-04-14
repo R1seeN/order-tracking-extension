@@ -64,20 +64,38 @@ const insertData = (data) => {
     const trackingData = data.result?.tracking_data;
     let htmlContent = `<p class="result__number">№${orderNumberValue}</p>`;
 
-    if (data.result.tracking_step === 'parcel_received') {
-        htmlContent += '<div class="result__success">' +
-            '<p class="result__success__description">Отримано</p>' +
-            '</div>';
-
-    } else {
-        htmlContent += '<div class="result__cancelled">' +
-            '<p class="result__cancelled__description">Скасоване</p>' +
-            '</div>';
+    switch (data.result?.tracking_step) {
+        case 'parcel_received':
+            htmlContent += '<div class="result__success">' +
+                '<p class="result__success__description">Отримано</p>' +
+                '</div>';
+            break;
+        case 'new_order':
+            htmlContent += '<div class="result__newOrder">' +
+                '<p class="result__newOrder__description">Нове замовлення</p>' +
+                '</div>';
+            break;
+        case 'assembling_order':
+            console.log(data.result?.tracking_data);
+            htmlContent += '<div class="result__newOrder">' +
+                '<p class="result__newOrder__description">Замовлення збирається</p>' +
+                '</div>';
+            break;
+        default:
+            htmlContent += '<div class="result__cancelled">' +
+                '<p class="result__cancelled__description">Скасоване</p>' +
+                '</div>';
     }
 
     htmlContent += '<ul class="result__list">';
     trackingData.forEach(element => {
-        htmlContent += `<li class=${(element.is_active)? "result__list__active" : "result__list__disabled"}>${element.name}</li><p class="list__date">${element.date}</p>`;
+        htmlContent += `<li class=${
+            (element.is_active)
+            ?"result__list__active"
+            :(element.is_disabled)
+                ?"result__list__disabled" 
+                :"result__list__active__disabled"
+        }>${element.name}</li><p class="list__date">${element.date}</p>`;
     });
     htmlContent += '</ul>';
 
@@ -88,6 +106,7 @@ const fetchOrderTrackingData = (url) => {
     fetch(url)
         .then((response) => response.json())
         .then((data) => {
+            console.log(data);
             setToLocalStorage();
             orderContainer.innerHTML = `<div id="order-result">${(isOrderFound(data))? insertData(data): "<p class='result__notfound'>Замовлення не знайдено</p>"}</div>`
 

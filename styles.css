@@ -8,7 +8,7 @@ html {
 body {
   font-size: 14px;
   width: 300px;
-  height: 250px;
+
 
 }
 
@@ -36,7 +36,7 @@ body {
 .result__notfound {
   display: block;
   padding: 10px;
-  margin-bottom: 10px;;
+  margin: 0 15px -10px;
   text-align: center;
   color: red;
   background-color: #fac7c7;
@@ -65,7 +65,7 @@ body {
   border: none;
   padding: 10px 15px;
   border-radius: 6px;
-  margin: 10px;
+  margin: 15px;
   font-weight: bold;
 
 }
@@ -104,7 +104,7 @@ body {
 }
 
 .result__list {
-  margin: 11px 3px;
+  margin: 12px 3px -20px;
   box-sizing: border-box;
   display: block;
   padding: 10px 10px 0 10px;
@@ -131,6 +131,24 @@ body {
 
 }
 
+.result__newOrder {
+  margin: 0 13px;
+  box-sizing: border-box;
+  display: flex;
+  background-color: #f3f3f3;
+  width: 50%;
+  border-radius: 60px;
+}
+.result__newOrder__description {
+  margin: 0;
+  background: url(images/clock.png) no-repeat left center;
+  padding: 7px 39px;
+  color: #b5b5b5;
+  background-position-x: 12px;
+  background-position-y: 18px;
+
+}
+
 .result__cancelled__description {
   margin: 0;
   background: url(images/cross.png) no-repeat left center;
@@ -140,6 +158,15 @@ body {
   background-position-y: 7px;
 
 }
+
+.result__list__active__disabled {
+  background:url("images/circle-outline-of-small-size (2).png") no-repeat 0 0;
+  padding-left:30px;
+  padding-bottom: 10px;
+  background-position-y: 3px;
+
+}
+
 
 
 .result__list__disabled {
