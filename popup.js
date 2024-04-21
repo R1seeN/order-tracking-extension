@@ -4,53 +4,91 @@ import config from "./config.json" with {type: "json"};
 const orderNumber = document.getElementById("order-number");
 const orderButton = document.getElementById("order-button");
 let orderContainer = document.getElementById("order-container");
-let orderDataList = document.getElementById("order");
+let orderStorage = document.getElementById("storage-container");
 
 const regex = /^\d+$/;
 
 let orderNumberValue;
-
-const getItemLocalStorage = () => {
-    return localStorage.getItem('request-data') !== null ? localStorage.getItem('request-data').split(" ") : []
-}
-
-const insertDateFromLocalStorage = (itemLocalStorage) => {
-
-    for (const itemLocalStorageElement of itemLocalStorage) {
-        console.log(itemLocalStorageElement);
-
-        let option = document.createElement("option");
-
-        option.value = itemLocalStorageElement;
-        option.textContent = itemLocalStorageElement;
-
-        orderDataList.appendChild(option);
-    }
-}
-
-const itemLocalStorage = getItemLocalStorage();
-insertDateFromLocalStorage(itemLocalStorage);
-
-
-
 orderNumber.addEventListener("change", (event) => {
     orderNumber.textContent = event.target.value;
 });
-
 orderButton.addEventListener("click", () => {
-
     orderNumberValue = orderNumber.value;
 
     if (isValid(orderNumberValue)) {
         const url = createUrl(orderNumberValue);
-        fetchOrderTrackingData(url);
+
+        fetchOrderTrackingData(url).then(response => {
+            console.log(response);
+            orderContainer.innerHTML = `<div id="order-result">${(isOrderFound(response))
+                ? insertData(response)
+                : "<p class='result__notfound'>Замовлення не знайдено</p>"}</div>`;
+        });
+
+        const requestData = setToLocalStorage();
+        if (!requestData.includes(orderNumberValue)) {
+            requestData.push(orderNumberValue);
+        }
+
+        localStorage.setItem('request-data', JSON.stringify(requestData));
+    }
+});
+
+let itemLocalStorage = getItemLocalStorage();
+let filteredItems = await filterRequestData(itemLocalStorage);
+
+localStorage.setItem('request-data', JSON.stringify(filteredItems));
+
+insertDataFromLocalStorage(filteredItems);
+
+function getItemLocalStorage(){
+    return localStorage.getItem('request-data') !== null ? JSON.parse(localStorage.getItem('request-data')): [];
+}
+async function filterRequestData (itemLocalStorage) {
+    let filteredItems = [];
+
+    for (const orderNValue of itemLocalStorage) {
+        await fetchOrderTrackingData(createUrl(orderNValue)).then(response => {
+            if (response.result?.status === 'success') {
+                filteredItems.push(orderNValue);
+            }
+        });
     }
 
-});
+    return filteredItems;
+}
+function insertDataFromLocalStorage(itemLocalStorage){
+    for (const itemLocalStorageElement of itemLocalStorage) {
+        let buttonElement = document.createElement("button");
+        let imgElement = document.createElement("img");
+
+        imgElement.src = "images/trash.png";
+
+        buttonElement.textContent = itemLocalStorageElement;
+
+        buttonElement.classList.add("btn");
+        imgElement.classList.add("btn__img");
+
+
+        buttonElement.addEventListener("click", function() {
+            orderNumber.value = itemLocalStorageElement;
+
+        });
+
+        imgElement.addEventListener("click", function(event) {
+            orderStorage.removeChild(buttonElement);
+
+            event.stopPropagation();
+        });
+
+        buttonElement.appendChild(imgElement);
+        orderStorage.appendChild(buttonElement);
+    }
+}
 
 const isValid = (orderNumberValue) => regex.test(orderNumberValue);
 
-const createUrl = (orderNumberValue) => {
+function createUrl(orderNumberValue) {
     return config.evaApiBaseAddress
             + `/api/checkout-service/order-tracking-data?orderNumber=${orderNumberValue}&storeCode=ua`;
 }
@@ -60,6 +98,22 @@ const isOrderFound = (data) => {
 }
 
 const insertData = (data) => {
+    let buttonElement = document.createElement("button");
+    let imgElement = document.createElement("img");
+
+    imgElement.src = "images/trash.png";
+
+    buttonElement.textContent = orderNumberValue;
+    buttonElement.appendChild(imgElement);
+    buttonElement.classList.add("btn");
+    imgElement.classList.add("btn__img");
+
+
+    let orders = Array.from(orderStorage.children);
+    if (!orders.find(orderElement =>
+        orderElement.textContent === orderNumberValue)) {
+        orderStorage.appendChild(buttonElement);
+    }
 
     const trackingData = data.result?.tracking_data;
     let htmlContent = `<p class="result__number">№${orderNumberValue}</p>`;
@@ -76,9 +130,18 @@ const insertData = (data) => {
                 '</div>';
             break;
         case 'assembling_order':
-            console.log(data.result?.tracking_data);
             htmlContent += '<div class="result__newOrder">' +
                 '<p class="result__newOrder__description">Замовлення збирається</p>' +
+                '</div>';
+            break;
+        case 'parcel_sent':
+            htmlContent += '<div class="result__newOrder">' +
+                '<p class="result__newOrder__description__sent">Замовлення відправлене</p>' +
+                '</div>';
+            break;
+        case 'warehouse_delivered':
+            htmlContent += '<div class="result__newOrder">' +
+                '<p class="result__newOrder__description__sent">Доставлене в пункт видачі</p>' +
                 '</div>';
             break;
         default:
@@ -102,25 +165,13 @@ const insertData = (data) => {
     return htmlContent;
 }
 
-const fetchOrderTrackingData = (url) => {
-    fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            setToLocalStorage();
-            orderContainer.innerHTML = `<div id="order-result">${(isOrderFound(data))? insertData(data): "<p class='result__notfound'>Замовлення не знайдено</p>"}</div>`
-
-        })
-        .catch(console.error);
+async function fetchOrderTrackingData(url){
+    const response = await fetch(url).catch();
+    return await response.json();
 }
 
-const setToLocalStorage = () => {
-    const requestDataJson = localStorage.getItem('request-data');
-    // console.log(requestDataJson);
-    let requestData = requestDataJson !== null ? JSON.parse(requestDataJson) : "";
-    if (!requestData.includes(orderNumberValue)) {
-        requestData += orderNumberValue + " ";
-    }
-    localStorage.setItem('request-data', JSON.stringify(requestData));
+function setToLocalStorage() {
+    let requestDataJson = localStorage.getItem('request-data');
+    return requestDataJson !== null ? JSON.parse(requestDataJson) : [];
 }
 

@@ -60,12 +60,12 @@ body {
 
 .input__button {
   display: inline-block;
-  background-color: #e56c52;
+  background-color: #f39049;
   color: white;
   border: none;
   padding: 10px 15px;
   border-radius: 6px;
-  margin: 15px;
+  margin: 5px 0 10px 0;
   font-weight: bold;
 
 }
@@ -184,7 +184,36 @@ body {
   background-position-y: 3px;
 }
 
+.result__newOrder__description__sent {
+  margin: 0;
+  background: url(images/car.png) no-repeat left center;
+  padding: 7px 39px;
+  color: #b5b5b5;
+  background-position-x: 12px;
+  background-position-y: 18px;
+}
 
+#storage-container {
+  margin-top: 3px;
+  text-align: center;
+}
 
+.btn {
+  cursor: pointer;
+  color: #919090;
+  border: none;
+  padding: 4px 5px;
+  margin: 4px 4px;
+  border-radius: 4px;
+  text-align: left;
+  width: 30%;
+  background-color: #f5f4f4;
+}
+
+.btn__img {
+  position: absolute;
+  margin: 1px 2px;
+  width: 14px;
+}
 
 

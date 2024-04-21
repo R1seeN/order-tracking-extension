@@ -17,17 +17,19 @@
     </section>
     <section class="input">
         <label for="order-number"></label>
-        <input type="text" list="order" placeholder="Введіть номер замовлення" maxlength="15" class="input__tracking" id="order-number">
-        <input type="submit" value="Відстежити замовлення" class="input__button" id="order-button">
-        <datalist id="order">
+        <input type="text" placeholder="Введіть номер замовлення" maxlength="15" class="input__tracking" id="order-number">
+        <section class="storage">
+            <div id="storage-container">
 
-        </datalist>
+            </div>
+        </section>
+        <input type="submit" value="Відстежити замовлення" class="input__button" id="order-button">
     </section>
 
     <section class="result">
         <div id="order-container"></div>
     </section>
-    <br style="margin-bottom: 10px">
+    <br>
 
     <script type="module" src="popup.js"></script>
 </main>
