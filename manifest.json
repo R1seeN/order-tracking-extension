@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "EVA - Package Tracking",
+  "name": "EVA - Order Tracking",
   "version": "1.0",
-  "description": "Tracking packages from the hypermarket Eva.",
+  "description": "Tracking orders from the hypermarket Eva.",
   "icons": {
     "48": "images/icon-48.png",
     "72": "images/icon-72.png"
   },
   "action": {
-    "default_title": "EVA - Package Tracking",
+    "default_title": "EVA - Order Tracking",
     "default_popup": "popup.html"
   }
 }

@@ -34,14 +34,15 @@ orderButton.addEventListener("click", () => {
     }
 });
 
-let itemLocalStorage = getItemLocalStorage();
-let filteredItems = await filterRequestData(itemLocalStorage);
+let itemsLocalStorage = getItemsLocalStorage();
+let filteredItems = await filterRequestData(itemsLocalStorage);
 
 localStorage.setItem('request-data', JSON.stringify(filteredItems));
 
+
 insertDataFromLocalStorage(filteredItems);
 
-function getItemLocalStorage(){
+function getItemsLocalStorage(){
     return localStorage.getItem('request-data') !== null ? JSON.parse(localStorage.getItem('request-data')): [];
 }
 async function filterRequestData (itemLocalStorage) {
@@ -77,13 +78,19 @@ function insertDataFromLocalStorage(itemLocalStorage){
 
         imgElement.addEventListener("click", function(event) {
             orderStorage.removeChild(buttonElement);
-
+            removeOrderFromHistory(itemLocalStorageElement);
             event.stopPropagation();
         });
 
         buttonElement.appendChild(imgElement);
         orderStorage.appendChild(buttonElement);
     }
+}
+
+function removeOrderFromHistory(orderTrackingNumber) {
+    let data = getItemsLocalStorage().filter(item => item !== orderTrackingNumber);
+
+    localStorage.setItem('request-data', JSON.stringify(data));
 }
 
 const isValid = (orderNumberValue) => regex.test(orderNumberValue);
@@ -108,6 +115,11 @@ const insertData = (data) => {
     buttonElement.classList.add("btn");
     imgElement.classList.add("btn__img");
 
+    imgElement.addEventListener("click", function(event) {
+        orderStorage.removeChild(buttonElement);
+        removeOrderFromHistory(orderNumberValue);
+        event.stopPropagation();
+    });
 
     let orders = Array.from(orderStorage.children);
     if (!orders.find(orderElement =>
