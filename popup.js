@@ -1,189 +1,178 @@
 import config from "./config.json" with {type: "json"};
 
-
-const orderNumber = document.getElementById("order-number");
-const orderButton = document.getElementById("order-button");
-let orderContainer = document.getElementById("order-container");
-let orderStorage = document.getElementById("storage-container");
-
 const regex = /^\d+$/;
 
-let orderNumberValue;
-orderNumber.addEventListener("change", (event) => {
-    orderNumber.textContent = event.target.value;
+const numberInput = document.getElementById("number-input");
+const buttonInput = document.getElementById("button-input");
+let storageInput = document.getElementById("storage-input");
+let orderResult = document.getElementById("order-result");
+
+let numberInputValue;
+
+printStorageItems(getStorageItems());
+
+numberInput.addEventListener("change", (event) => {
+    numberInput.value = event.target.value;
 });
-orderButton.addEventListener("click", () => {
-    orderNumberValue = orderNumber.value;
 
-    if (isValid(orderNumberValue)) {
-        const url = createUrl(orderNumberValue);
+buttonInput.addEventListener("click", () => {
+    numberInputValue = numberInput.value;
+    printStorageItems([numberInputValue]);
 
-        fetchOrderTrackingData(url).then(response => {
+    if (isValid()) {
+        const url = createUrl();
+
+        getResponse(url).then(response => {
             console.log(response);
-            orderContainer.innerHTML = `<div id="order-result">${(isOrderFound(response))
-                ? insertData(response)
-                : "<p class='result__notfound'>Замовлення не знайдено</p>"}</div>`;
+            orderResult.innerHTML = isOrderFound(response)
+                ? getHtmlResult(response)
+                : '<div class="result-not-found"><p>Замовлення не знайдено<p></div>';
         });
 
-        const requestData = setToLocalStorage();
-        if (!requestData.includes(orderNumberValue)) {
-            requestData.push(orderNumberValue);
+        const requestData = getStorageItems();
+        if (!requestData.includes(numberInputValue)) {
+            requestData.push(numberInputValue);
         }
 
-        localStorage.setItem('request-data', JSON.stringify(requestData));
+        localStorage.setItem('request', JSON.stringify(requestData));
     }
 });
 
-let itemsLocalStorage = getItemsLocalStorage();
-let filteredItems = await filterRequestData(itemsLocalStorage);
-
-localStorage.setItem('request-data', JSON.stringify(filteredItems));
-
-
-insertDataFromLocalStorage(filteredItems);
-
-function getItemsLocalStorage(){
-    return localStorage.getItem('request-data') !== null ? JSON.parse(localStorage.getItem('request-data')): [];
-}
-async function filterRequestData (itemLocalStorage) {
-    let filteredItems = [];
-
-    for (const orderNValue of itemLocalStorage) {
-        await fetchOrderTrackingData(createUrl(orderNValue)).then(response => {
-            if (response.result?.status === 'success') {
-                filteredItems.push(orderNValue);
-            }
-        });
-    }
-
-    return filteredItems;
-}
-function insertDataFromLocalStorage(itemLocalStorage){
-    for (const itemLocalStorageElement of itemLocalStorage) {
-        let buttonElement = document.createElement("button");
-        let imgElement = document.createElement("img");
-
-        imgElement.src = "images/trash.png";
-
-        buttonElement.textContent = itemLocalStorageElement;
-
-        buttonElement.classList.add("btn");
-        imgElement.classList.add("btn__img");
-
-
-        buttonElement.addEventListener("click", function() {
-            orderNumber.value = itemLocalStorageElement;
-
-        });
-
-        imgElement.addEventListener("click", function(event) {
-            orderStorage.removeChild(buttonElement);
-            removeOrderFromHistory(itemLocalStorageElement);
-            event.stopPropagation();
-        });
-
-        buttonElement.appendChild(imgElement);
-        orderStorage.appendChild(buttonElement);
-    }
+function isValid() {
+    return regex.test(numberInputValue);
 }
 
-function removeOrderFromHistory(orderTrackingNumber) {
-    let data = getItemsLocalStorage().filter(item => item !== orderTrackingNumber);
-
-    localStorage.setItem('request-data', JSON.stringify(data));
-}
-
-const isValid = (orderNumberValue) => regex.test(orderNumberValue);
-
-function createUrl(orderNumberValue) {
+function createUrl() {
     return config.evaApiBaseAddress
-            + `/api/checkout-service/order-tracking-data?orderNumber=${orderNumberValue}&storeCode=ua`;
+            + `/api/checkout-service/order-tracking-data?orderNumber=${numberInputValue}&storeCode=ua`;
 }
 
-const isOrderFound = (data) => {
+function getStorageItems(){
+    const items = localStorage.getItem('request');
+
+    return (items !== null) ? JSON.parse(items) : [];
+}
+
+function isOrderFound(data) {
     return data.result.status !== 'error';
 }
 
-const insertData = (data) => {
-    let buttonElement = document.createElement("button");
-    let imgElement = document.createElement("img");
-
-    imgElement.src = "images/trash.png";
-
-    buttonElement.textContent = orderNumberValue;
-    buttonElement.appendChild(imgElement);
-    buttonElement.classList.add("btn");
-    imgElement.classList.add("btn__img");
-
-    imgElement.addEventListener("click", function(event) {
-        orderStorage.removeChild(buttonElement);
-        removeOrderFromHistory(orderNumberValue);
-        event.stopPropagation();
-    });
-
-    let orders = Array.from(orderStorage.children);
-    if (!orders.find(orderElement =>
-        orderElement.textContent === orderNumberValue)) {
-        orderStorage.appendChild(buttonElement);
+function getStatusClass(statusItemStr) {
+    if (statusItemStr === "Отримано") {
+        return ["status-success", "success"];
+    } else if (statusItemStr === "Скасовано") {
+        return ["status-canceled", "canceled"];
+    } else {
+        return ["status-new-order", "new-order"];
     }
+}
 
+function getHtmlResult (data) {
+    const statusItem = data.result?.tracking_step;
     const trackingData = data.result?.tracking_data;
-    let htmlContent = `<p class="result__number">№${orderNumberValue}</p>`;
+    const statusItemStr = getStatusItemStr(statusItem);
 
-    switch (data.result?.tracking_step) {
-        case 'parcel_received':
-            htmlContent += '<div class="result__success">' +
-                '<p class="result__success__description">Отримано</p>' +
-                '</div>';
-            break;
-        case 'new_order':
-            htmlContent += '<div class="result__newOrder">' +
-                '<p class="result__newOrder__description">Нове замовлення</p>' +
-                '</div>';
-            break;
-        case 'assembling_order':
-            htmlContent += '<div class="result__newOrder">' +
-                '<p class="result__newOrder__description">Замовлення збирається</p>' +
-                '</div>';
-            break;
-        case 'parcel_sent':
-            htmlContent += '<div class="result__newOrder">' +
-                '<p class="result__newOrder__description__sent">Замовлення відправлене</p>' +
-                '</div>';
-            break;
-        case 'warehouse_delivered':
-            htmlContent += '<div class="result__newOrder">' +
-                '<p class="result__newOrder__description__sent">Доставлене в пункт видачі</p>' +
-                '</div>';
-            break;
-        default:
-            htmlContent += '<div class="result__cancelled">' +
-                '<p class="result__cancelled__description">Скасоване</p>' +
-                '</div>';
-    }
+    let htmlContent = `<p class="result-number">№${numberInputValue}</p>`;
 
-    htmlContent += '<ul class="result__list">';
-    trackingData.forEach(element => {
-        htmlContent += `<li class=${
-            (element.is_active)
-            ?"result__list__active"
-            :(element.is_disabled)
-                ?"result__list__disabled" 
-                :"result__list__active__disabled"
-        }>${element.name}</li><p class="list__date">${element.date}</p>`;
-    });
-    htmlContent += '</ul>';
+    let [statusClass, img] = getStatusClass(statusItemStr);
+
+    htmlContent +=
+        `<div class="${statusClass} status-container">
+            <img class="status__img" src="images/${img}.png" alt="success">
+            <span>${statusItemStr}</span>
+        </div>`;
+    
+
+    htmlContent +=
+        `<div class="result-container">
+            <ul class="result__list">
+                ${trackingData.map(item =>
+            `<li class="result-list__item">
+                <div class="result-list-item__description">
+                    <img src="images/${item.is_active? "circle-success": item.is_disable? "circle-new-order" : "circle-canceled"}.png" 
+                             alt="circle success"
+                             class="result-list-item__img">
+                    <span>${item.name}</span>
+                </div>
+                 <br>
+                 <span class="result-list-item__date">${item.date}</span>
+            </li>`
+        ).join('')}
+            </ul>
+        </div>`;
 
     return htmlContent;
 }
 
-async function fetchOrderTrackingData(url){
+async function getResponse(url) {
     const response = await fetch(url).catch();
+
     return await response.json();
 }
 
-function setToLocalStorage() {
-    let requestDataJson = localStorage.getItem('request-data');
-    return requestDataJson !== null ? JSON.parse(requestDataJson) : [];
+function getStatusItemStr(statusItem) {
+    switch (statusItem) {
+        case "parcel_received":
+            return "Отримано";
+
+        case "new_order":
+            return "Нове замовлення";
+
+        case "assembling_order":
+            return "Замовлення збирається";
+
+        case "parcel_sent":
+            return "Замовлення відправлене";
+
+        case "warehouse_delivered":
+            return "Доставлене в пункт видачі";
+
+        default:
+            return "Скасовано";
+    }
+}
+
+function printStorageItems(storageItems){
+    for (const storageItem of storageItems) {
+        let storageButton = createStorageButton(storageItem);
+
+        const items = Array.from(storageInput.children);
+        const orderExists = items.some(item => item.textContent === numberInputValue);
+
+        if (!orderExists) {
+            storageInput.appendChild(storageButton);
+        }
+    }
+}
+
+function removeStorageItem(storageItem) {
+    let updatedStorage = getStorageItems().filter(item => item !== storageItem);
+
+    localStorage.setItem('request', JSON.stringify(updatedStorage));
+}
+
+function createStorageButton(storageItem) {
+    let button = document.createElement("button");
+    let buttonImg = document.createElement("img");
+    buttonImg.src = "images/trash.png";
+
+    button.textContent = storageItem;
+
+    button.classList.add("storage__btn");
+    buttonImg.classList.add("storage__btn__img");
+
+    button.addEventListener("click",() => {
+        numberInput.value = storageItem;
+    });
+
+    buttonImg.addEventListener("click",(event) => {
+        storageInput.removeChild(button);
+        removeStorageItem(storageItem);
+
+        event.stopPropagation();
+    });
+
+    button.appendChild(buttonImg);
+    return button;
 }
 

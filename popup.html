@@ -6,32 +6,34 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="header">
-    <img class="eva_icon" src="images/eva.png" alt="EVA" >
-    <h3 class="header__description">Відстеження замовлення</h3>
-</header>
+    <header class="header">
+        <img alt="EVA"
+             class="header-img"
+             src="images/header-img.png">
+        <h1 class="header-description">Відстеження замовлення</h1>
+    </header>
 
-<main>
-    <section class="description">
-        <p class="description__">Вкажіть номер замовлення, щоб дізнатися його місцезнаходження</p>
-    </section>
-    <section class="input">
-        <label for="order-number"></label>
-        <input type="text" placeholder="Введіть номер замовлення" maxlength="15" class="input__tracking" id="order-number">
-        <section class="storage">
-            <div id="storage-container">
-
-            </div>
+    <main class="main">
+        <section class="main-description-container">
+            <p>Вкажіть номер замовлення, щоб дізнатися його місцезнаходження</p>
         </section>
-        <input type="submit" value="Відстежити замовлення" class="input__button" id="order-button">
-    </section>
 
-    <section class="result">
-        <div id="order-container"></div>
-    </section>
-    <br>
+        <section class="main-input-container">
+            <label for="number-input"></label>
+            <input type="text"
+                   maxlength="15"
+                   id="number-input"
+                   class="main-input__input"
+                   placeholder="Введіть номер замовлення">
+            <div class="main-input__storage" id="storage-input"></div>
+            <button class="main-input__btn" id="button-input">Відстежити замовлення</button>
+        </section>
 
-    <script type="module" src="popup.js"></script>
-</main>
+        <section class="main-result-container">
+            <div id="order-result"></div>
+        </section>
+
+        <script type="module" src="popup.js"></script>
+    </main>
 </body>
 </html>
